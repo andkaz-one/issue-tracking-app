@@ -1,0 +1,54 @@
+<h3>Reporting a problem</h3>
+@if (issueReportForm) {
+<form clrForm [formGroup]="issueReportForm" (ngSubmit)="addIssue()">
+  <clr-input-container>
+    <label>Title</label>
+    <input clrInput formControlName="title" />
+    <clr-control-error>Field is required</clr-control-error>
+  </clr-input-container>
+  <div class="clr-row" *ngIf="suggestions.length">
+    <div class="clr-col-lg-2"></div>
+    <div class="clr-col-lg-6">
+      <clr-stack-view>
+        <clr-stack-header>Podobne problemy</clr-stack-header>
+        <clr-stack-block *ngFor="let issue of suggestions">
+          <clr-stack-label
+            >#{{ issue.issueNo }}:{{ issue.title }}</clr-stack-label
+          >
+          <clr-stack-content>{{ issue.description }}</clr-stack-content>
+        </clr-stack-block>
+      </clr-stack-view>
+    </div>
+  </div>
+  <clr-textarea-container>
+    <label>Description</label>
+    <textarea clrTextarea formControlName="description"></textarea>
+  </clr-textarea-container>
+  <clr-radio-container clrInline>
+    <label>Priority</label>
+    <clr-radio-wrapper>
+      <input type="radio" value="low" clrRadio formControlName="priority" />
+      <label>Low</label>
+    </clr-radio-wrapper>
+    <clr-radio-wrapper>
+      <input type="radio" value="high" clrRadio formControlName="priority" />
+      <label>High</label>
+    </clr-radio-wrapper>
+    <clr-control-error>Choose priority</clr-control-error>
+  </clr-radio-container>
+  <clr-select-container>
+    <label>Type</label>
+    <select clrSelect formControlName="type">
+      <option value="Function">Function</option>
+      <option value="Malfunction">Malfunction</option>
+      <option value="Documentation">Documentation</option>
+    </select>
+    <clr-control-error>Type is required</clr-control-error>
+  </clr-select-container>
+  <button class="btn" type="button" (click)="closeFormHandler.emit()">
+    Cancel
+  </button>
+  <button class="btn btn-primary" type="submit">Save</button>
+</form>
+
+}

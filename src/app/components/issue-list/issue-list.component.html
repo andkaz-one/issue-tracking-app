@@ -1,0 +1,150 @@
+<clr-tabs>
+  <clr-tab>
+    <button clrTabLink>Table</button>
+    <clr-tab-content *clrIfActive>
+      @if (!showReportIssue()) {
+      <ng-container>
+        <ng-container *ngTemplateOutlet="addIssueBtn"></ng-container>
+        <clr-datagrid>
+          <clr-dg-column [clrDgField]="'issueNo'" [clrDgColType]="'number'"
+            >No issue</clr-dg-column
+          >
+          <clr-dg-column [clrDgField]="'type'">Type</clr-dg-column>
+          <clr-dg-column [clrDgField]="'title'">Title</clr-dg-column>
+          <clr-dg-column [clrDgField]="'description'"
+            >Description</clr-dg-column
+          >
+          <clr-dg-column [clrDgField]="'priority'">Priority</clr-dg-column>
+          <clr-dg-row *clrDgItems="let issue of pendingIssues()">
+            <clr-dg-action-overflow>
+              <button class="action-item" (click)="toggleSolveDialog(issue)">
+                Mark as complete
+              </button>
+              <button class="action-item" (click)="toggleEditDialog(issue)">
+                Edit record
+              </button>
+            </clr-dg-action-overflow>
+            <clr-dg-cell>{{ issue.issueNo }}</clr-dg-cell>
+            <clr-dg-cell>{{ issue.type }}</clr-dg-cell>
+            <clr-dg-cell>{{ issue.title }}</clr-dg-cell>
+            <clr-dg-cell>{{ issue.description }}</clr-dg-cell>
+            <clr-dg-cell>
+              <span
+                class="label"
+                [class.label-danger]="issue.priority === 'high'"
+                >{{ issue.priority }}</span
+              >
+            </clr-dg-cell>
+          </clr-dg-row>
+          <clr-dg-footer>
+            <clr-dg-pagination #pagination [clrDgPageSize]="15">
+              {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of
+              {{ pagination.totalItems }} issues
+            </clr-dg-pagination>
+          </clr-dg-footer>
+        </clr-datagrid>
+      </ng-container>
+      } @else {
+      <ng-container *ngTemplateOutlet="report"></ng-container>
+      }
+    </clr-tab-content>
+  </clr-tab>
+  <clr-tab>
+    <button clrTabLink>Kanban</button>
+    <clr-tab-content *clrIfActive>
+      @if (!showReportIssue()) {
+      <ng-container>
+        <ng-container *ngTemplateOutlet="addIssueBtn"></ng-container>
+
+        <div class="example-container">
+          <div class="card-container">
+            <div class="card">
+              <div class="card-header">To Do</div>
+              <div class="card-block">
+                <div class="card-text">
+                  <div
+                    cdkDropList
+                    #todoIssues="cdkDropList"
+                    [cdkDropListData]="pendingIssues()"
+                    [cdkDropListConnectedTo]="[completeIssues]"
+                    (cdkDropListDropped)="drop($event)"
+                    class="list compact issues-list"
+                  >
+                    @for (item of pendingIssues(); track item) {
+                    <div class="issue-box" cdkDrag [cdkDragData]="item">
+                      <span>{{ item.title }}</span>
+                      <span
+                        class="label"
+                        [class.label-danger]="item.priority === 'high'"
+                        >{{ item.priority }}</span
+                      >
+                    </div>
+                    }
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                Active issues: {{ pendingIssues().length }}
+              </div>
+            </div>
+          </div>
+
+          <div class="card-container">
+            <div class="card">
+              <div class="card-header">Completed</div>
+              <div class="card-block">
+                <div class="card-text">
+                  <div
+                    cdkDropList
+                    #completeIssues="cdkDropList"
+                    [cdkDropListData]="completedIssues()"
+                    [cdkDropListConnectedTo]="[todoIssues]"
+                    (cdkDropListDropped)="drop($event)"
+                    class="issues-list"
+                  >
+                    @for (item of completedIssues(); track item) {
+                    <div class="issue-box" cdkDrag [cdkDragData]="item">
+                      <span>{{ item.title }}</span>
+                      <span>{{ item.completed | date }}</span>
+                    </div>
+                    }
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                Completed issues: {{ completedIssues().length }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      } @else {
+      <ng-container *ngTemplateOutlet="report"></ng-container>
+      }
+    </clr-tab-content>
+  </clr-tab>
+</clr-tabs>
+
+@if(selectedIssue) {
+<app-edit-issue
+  [visible]="showEditDialog()"
+  [issue]="selectedIssue"
+  (onSaveIssue)="onCloseReportForm()"
+></app-edit-issue>
+}
+
+<app-confirm-dialog
+  [visible]="showSolveDialog()"
+  [issueNo]="selectedIssue?.issueNo"
+  (confirmation)="onConfirm($event)"
+></app-confirm-dialog>
+
+<ng-template #report>
+  <app-issue-report (closeFormHandler)="onCloseReportForm()"></app-issue-report>
+</ng-template>
+
+<ng-template #addIssueBtn>
+  <button class="btn btn-primary" (click)="showReportIssue.set(true)">
+    Add new issue
+  </button>
+</ng-template>

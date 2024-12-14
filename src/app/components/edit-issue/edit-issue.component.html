@@ -1,0 +1,48 @@
+<clr-modal [clrModalOpen]="visible()" [clrModalClosable]="false">
+  <h3 class="modal-title">Edit issue</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="editIssueForm">
+      <clr-input-container>
+        <label>Title</label>
+        <input clrInput formControlName="title" />
+        <clr-control-error>Field is required</clr-control-error>
+      </clr-input-container>
+      <clr-textarea-container>
+        <label>Description</label>
+        <textarea clrTextarea formControlName="description"></textarea>
+      </clr-textarea-container>
+      <clr-radio-container clrInline>
+        <label>Priority</label>
+        <clr-radio-wrapper>
+          <input type="radio" value="low" clrRadio formControlName="priority" />
+          <label>Low</label>
+        </clr-radio-wrapper>
+        <clr-radio-wrapper>
+          <input
+            type="radio"
+            value="high"
+            clrRadio
+            formControlName="priority"
+          />
+          <label>High</label>
+        </clr-radio-wrapper>
+        <clr-control-error>Choose priority</clr-control-error>
+      </clr-radio-container>
+      <clr-select-container>
+        <label>Type</label>
+        <select clrSelect formControlName="type">
+          <option value="Function">Function</option>
+          <option value="Malfunction">Malfunction</option>
+          <option value="Documentation">Documentation</option>
+        </select>
+        <clr-control-error>Type is required</clr-control-error>
+      </clr-select-container>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" type="button" (click)="onSaveIssue.emit()">
+      Cancel
+    </button>
+    <button class="btn btn-primary" type="button" (click)="save()">Save</button>
+  </div>
+</clr-modal>
